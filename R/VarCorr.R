@@ -20,8 +20,8 @@ function(sc, cnms, nc = lengths(cnms, use.names = FALSE),
         ## Si := \sigma^2 \Lambda_i \Lambda_i'
         object <- reCovs[[i]]
         nci <- nc[i]
+        cnmsi <- cnms[[i]]
         Li <- getLambda(object)
-        rownames(Li) <- cnms[[i]]
         jj <- seq.int(from = 1L, by = nci + 1L, length.out = nci)
         Si <- if (is.null(sc)) tcrossprod(Li) else sc * sc * tcrossprod(Li)
         Si.sd <- sqrt(Si[jj])
@@ -32,6 +32,8 @@ function(sc, cnms, nc = lengths(cnms, use.names = FALSE),
                "cs"  = if ( object@hom) typ1 <- "homcs",
                "ar1" = if (!object@hom) typ1 <- "hetar1")
         class(Si) <- c(paste0("vcmat_", typ1), "matrix", "array")
+        dimnames(Si) <- dimnames(Si.cor) <- list(cnmsi, cnmsi)
+        names(Si.sd) <- cnmsi
         attr(Si, "stddev") <- Si.sd
         attr(Si, "correlation") <- Si.cor
         attr(Si, "theta") <- getTheta(object)
