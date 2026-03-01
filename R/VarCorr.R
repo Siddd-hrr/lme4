@@ -36,10 +36,6 @@ function(sc, cnms, nc = lengths(cnms, use.names = FALSE),
         names(Si.sd) <- cnmsi
         attr(Si, "stddev") <- Si.sd
         attr(Si, "correlation") <- Si.cor
-        attr(Si, "theta") <- getTheta(object)
-        attr(Si, "profpar") <- getProfPar(object)
-        if (typ0 %in% c("cs", "ar1"))
-        attr(Si, "rho") <- if (nci > 1L) getVC(object)$ccomp else NaN
         Si
     })
     if (!is.null(nms)) {
