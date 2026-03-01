@@ -119,7 +119,7 @@ bootMer <- function(x, FUN, nsim = 1, seed = NULL,
             parallel::mclapply(simvec, ffun, mc.cores = ncpus)
         } else if (have_snow) {
             if (is.null(cl)) {
-                cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
+                cl <- parallel::makeCluster(ncpus)
                 ## explicit export of the lme4 namespace since most FUNs will probably
                 ## use some of them
                 parallel::clusterExport(cl, varlist=getNamespaceExports("lme4"))

@@ -223,7 +223,7 @@ allFit <- function(object, meth.tab = NULL,
                                       ffun, mc.cores = ncpus)
                } else if(have_snow) {
                    if(is.null(cl)) {
-                       cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
+                       cl <- parallel::makeCluster(ncpus)
                        ## consider exporting data/package ?
                        ## parallel::clusterEvalQ(cl,library("lme4"))
                        ## try to get data and export it?

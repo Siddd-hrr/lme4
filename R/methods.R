@@ -117,7 +117,7 @@ influence.merMod <- function(model, groups, data, maxfun=1000, do.coef = TRUE,
             parallel::mclapply(unique.del, deleteGroup, mc.cores = ncpus)
         } else if (have_snow) {
             if (is.null(cl)) {
-                cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
+                cl <- parallel::makeCluster(ncpus)
                 on.exit(parallel::stopCluster(cl))
                 parallel::clusterEvalQ(cl, require("lme4"))
             }
