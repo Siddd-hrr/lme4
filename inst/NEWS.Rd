@@ -46,6 +46,9 @@
       \code{bootMer()}, and \code{profile.merMod}. Argument \code{ncores} is
       deprecated and corresponds to \code{parallel = "snow"} and
       \code{ncpus = ncores}.
+      \item When using a custom parallel "snow" cluster, it is now sufficient
+      to specify argument \code{cl}. Previously one had to also specify
+      arguments \code{parallel} and \code{ncpus}.
     } % itemize
   } % new features
   \subsection{USER-VISIBLE CHANGES}{
