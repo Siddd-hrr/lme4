@@ -41,6 +41,11 @@
       (for compatibility with recent changes in \code{stats::weighted.residuals})
       \item \code{weights.merMod} now allows \code{type = "working"} for
       LMMs (for compatibility with the updated \code{stats::weighted.residuals()} in R-devel)
+      \item \code{influence.merMod} now supports arguments \code{parallel},
+      \code{ncpus}, and \code{cl} analogously to \code{allFit()},
+      \code{bootMer()}, and \code{profile.merMod}. Argument \code{ncores} is
+      deprecated and corresponds to \code{parallel = "snow"} and
+      \code{ncpus = ncores}.
     } % itemize
   } % new features
   \subsection{USER-VISIBLE CHANGES}{

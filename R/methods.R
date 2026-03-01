@@ -1,7 +1,24 @@
 influence.merMod <- function(model, groups, data, maxfun=1000, do.coef = TRUE,
-                             ncores=getOption("mc.cores",1),
                              start=NULL,
+                             parallel = c("no", "multicore", "snow"),
+                             ncpus = getOption("mc.cores", 1L),
+                             cl = NULL,
+                             ncores,
                              ...) {
+
+    if (!missing(ncores)) {
+        .Deprecated(msg = "argument 'ncores' is deprecated; please use 'parallel', 'ncpus', and 'cl' instead")
+        ncpus <- ncores
+        parallel <- "snow"
+    }
+
+    parallel <- match.arg(parallel)
+
+    ## To please R CMD check
+    do_parallel <- have_mc <- have_snow <- NULL
+    
+    # (parallel, ncpus) -> (do_parallel, have_mc, have_snow)
+    eval(initialize.parallel)
 
     .groups <- NULL  ## avoid false-positive code checks
     .vcov <- function(x) Matrix::as.matrix(vcov(x))
@@ -95,12 +112,17 @@ influence.merMod <- function(model, groups, data, maxfun=1000, do.coef = TRUE,
         vcov.1 <<- .vcov(mod.1)
         namedList(fixed.1, vc.1, vcov.1, converged, feval)
     }
-    result <- if(ncores >= 2) {
-        message("Note: using a cluster of ", ncores, " cores")
-        cl <- parallel::makeCluster(ncores)
-        on.exit(parallel::stopCluster(cl))
-        parallel::clusterEvalQ(cl, require("lme4"))
-        parallel::clusterApply(cl, unique.del, deleteGroup)
+    result <- if (do_parallel) {
+        if (have_mc) {
+            parallel::mclapply(unique.del, deleteGroup, mc.cores = ncpus)
+        } else if (have_snow) {
+            if (is.null(cl)) {
+                cl <- parallel::makePSOCKcluster(rep("localhost", ncpus))
+                on.exit(parallel::stopCluster(cl))
+                parallel::clusterEvalQ(cl, require("lme4"))
+            }
+            parallel::parLapply(cl, unique.del, deleteGroup)
+        }
     } else {
         lapply(unique.del, deleteGroup)
     }

@@ -825,7 +825,7 @@ test_that("influence OK with tibbles", {
     ss <- tibble::as_tibble(sleepstudy[1:60,])
     smallfit <- lmer(Reaction ~ 1 + (1 | Subject),
                      data = ss)
-    i1 <- influence(smallfit, ncores = 1)
+    i1 <- influence(smallfit, ncpus = 1)
     expect_equal(head(i1[["fixed.effects[-case]"]]),
                  structure(c(286.35044481665, 286.179896199062,
                              286.327301507498, 285.014692121823,
@@ -856,7 +856,7 @@ test_that("cooks distance", {
 })
 
 test_that("cooks distance on subject-level influence", {
-  ifm1S <- influence(fm1, "Subject", ncores=1)
+  ifm1S <- influence(fm1, "Subject", ncpus=1)
   expect_equal(
       unname(head(cooks.distance(ifm1S),2)),
       c(0.33921460279262, 0.290309061006305),
@@ -865,7 +865,7 @@ test_that("cooks distance on subject-level influence", {
 
 test_that("cooks distance on glmer models", {
   inf <- influence(gm1)
-  inf.h <- influence(gm1, "herd", ncores=1)
+  inf.h <- influence(gm1, "herd", ncpus=1)
   cook <- cooks.distance(inf)
   expect_equal(unname(head(cook, 3)),
                c(0.0532998800033037, 0.0405931172763581, 0.252608337928438),
@@ -916,7 +916,7 @@ if (testLevel>1) {
   ## n.b. influence() doesn't work under system.time();
   ##  weird evaluation stuff ?
   ## FIXME: work on timing some more
-  i1 <- influence(fm1, ncores=1)
+  i1 <- influence(fm1, ncpus=1)
   test_that("full version of influence", {
     expect_equal(c(head(i1[["fixed.effects[-case]"]],1)),
                  c(252.323536264131, 10.3222704729148))
@@ -926,14 +926,26 @@ if (testLevel>1) {
                c(0.016503344184025, 0.0106634053477361))
   if (parallel::detectCores() > 1) {
     test_that("parallel influence", {
-        i2 <- suppressMessages(influence(fm1, ncores=2))
-        ## if (packageVersion("Matrix") != "1.4.2")
-        ## fow now,as they differ
-        str(i1)
-        str(i2)
-        print(all.equal(i1, i2)) # to see diff
-        print(identical(i1, i2))
-        # expect_equal(i1, i2) ## <<<<-------------- FAILS (4 MM)
+        # ncores = 2 (deprecated)
+        expect_warning(
+            i2 <- influence(fm1, ncores=2),
+            "argument 'ncores' is deprecated"
+        )
+        i3 <- influence(fm1, parallel = "snow", ncpus = 2)
+        expect_equal(i1, i2)
+        expect_equal(i1, i3)
+
+        if (.Platform$OS.type != "windows") {
+            i4 <- influence(fm1, parallel = "multicore", ncpus = 2)
+            expect_equal(i1, i4)
+        }
+
+        # provide cl
+        cl <- parallel::makePSOCKcluster(rep("localhost", 2))
+        on.exit(parallel::stopCluster(cl))
+        parallel::clusterEvalQ(cl, library(lme4))
+        i5 <- influence(fm1, parallel = "snow", cl = cl)
+        expect_equal(i1, i5)
     })
   }
 }
