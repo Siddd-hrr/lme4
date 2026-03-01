@@ -92,7 +92,7 @@ For plotting \code{"influence.merMod"} objects, see \code{\link[car]{infIndexPlo
 }
 
 \author{
-J. Fox \email{jfox@mcmaster.ca}
+J. Fox; parallel extensions by H. Bengtsson
 }
 
 \seealso{
