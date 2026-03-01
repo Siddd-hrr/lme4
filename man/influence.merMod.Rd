@@ -19,7 +19,7 @@
 \method{influence}{merMod}(model, groups, data, maxfun = 1000,
           do.coef = TRUE, start = NULL,
           parallel = c("no", "multicore", "snow"),
-          ncpus = getOption("mc.cores", 1L), cl = NULL, ncores, ...)
+          ncpus = getOption("influence.ncpus", 1L), cl = NULL, ncores, ...)
 \method{cooks.distance}{influence.merMod}(model, ...)
 \method{dfbeta}{influence.merMod}(model, which = c("fixed", "var.cov"), ...)
 \method{dfbetas}{influence.merMod}(model, ...)

@@ -1,7 +1,7 @@
 influence.merMod <- function(model, groups, data, maxfun=1000, do.coef = TRUE,
                              start=NULL,
                              parallel = c("no", "multicore", "snow"),
-                             ncpus = getOption("mc.cores", 1L),
+                             ncpus = getOption("influence.ncpus", 1L),
                              cl = NULL,
                              ncores,
                              ...) {
