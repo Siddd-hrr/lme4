@@ -944,7 +944,7 @@ if (testLevel>1) {
         cl <- parallel::makePSOCKcluster(rep("localhost", 2))
         on.exit(parallel::stopCluster(cl))
         parallel::clusterEvalQ(cl, library(lme4))
-        i5 <- influence(fm1, parallel = "snow", cl = cl)
+        i5 <- influence(fm1, parallel = "snow", ncpus = length(cl), cl = cl)
         expect_equal(i1, i5)
     })
   }
