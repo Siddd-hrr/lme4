@@ -931,18 +931,20 @@ arrange.condVar <- function(object,cv) {
 ## generic machinery for setting parallel options
 ## uses eval() (as in family()$initialize) to avoid too much list
 initialize.parallel <- expression({
-    have_mc <- have_snow <- FALSE
     if (length(parallel) > 1) parallel <- match.arg(parallel)
     if (!is.null(cl)) {
-        do_parallel <- TRUE
-        have_snow <- TRUE
-    } else {
-        do_parallel <- (parallel != "no" && ncpus > 1L)
-        if (do_parallel) {
-            if (parallel == "multicore") have_mc <- .Platform$OS.type != "windows"
-            else if (parallel == "snow") have_snow <- TRUE
-            if (!(have_mc || have_snow))
-                do_parallel <- FALSE # (only for "windows")
+        stopifnot(inherits(cl, "cluster"))
+        parallel <- "snow"
+    }
+    if (parallel == "multicore") {
+        stopifnot(is.numeric(ncpus), length(ncpus) == 1L, is.finite(ncpus), ncpus >= 1L)
+        if (.Platform$OS.type == "windows" || ncpus == 1L)
+            parallel <- "no"
+    } else if (parallel == "snow") {
+        if (is.null(cl)) {
+            stopifnot(is.numeric(ncpus), length(ncpus) == 1L, is.finite(ncpus), ncpus >= 1L)
+            if (ncpus == 1L)
+                parallel <- "no"
         }
     }
 })

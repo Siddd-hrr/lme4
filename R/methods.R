@@ -14,10 +14,7 @@ influence.merMod <- function(model, groups, data, maxfun=1000, do.coef = TRUE,
 
     parallel <- match.arg(parallel)
 
-    ## To please R CMD check
-    do_parallel <- have_mc <- have_snow <- NULL
-    
-    # (parallel, ncpus) -> (do_parallel, have_mc, have_snow)
+    # (parallel, ncpus, cl) -> (parallel)
     eval(initialize.parallel)
 
     .groups <- NULL  ## avoid false-positive code checks
@@ -112,17 +109,15 @@ influence.merMod <- function(model, groups, data, maxfun=1000, do.coef = TRUE,
         vcov.1 <<- .vcov(mod.1)
         namedList(fixed.1, vc.1, vcov.1, converged, feval)
     }
-    result <- if (do_parallel) {
-        if (have_mc) {
-            parallel::mclapply(unique.del, deleteGroup, mc.cores = ncpus)
-        } else if (have_snow) {
-            if (is.null(cl)) {
-                cl <- parallel::makeCluster(ncpus)
-                on.exit(parallel::stopCluster(cl))
-                parallel::clusterEvalQ(cl, require("lme4"))
-            }
-            parallel::parLapply(cl, unique.del, deleteGroup)
+    result <- if (parallel == "multicore") {
+        parallel::mclapply(unique.del, deleteGroup, mc.cores = ncpus)
+    } else if (parallel == "snow") {
+        if (is.null(cl)) {
+            cl <- parallel::makeCluster(ncpus)
+            on.exit(parallel::stopCluster(cl))
+            parallel::clusterEvalQ(cl, require("lme4"))
         }
+        parallel::parLapply(cl, unique.del, deleteGroup)
     } else {
         lapply(unique.del, deleteGroup)
     }
