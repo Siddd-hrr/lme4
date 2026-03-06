@@ -288,10 +288,11 @@ importFrom(reformulas,RHSForm)
 importFrom(reformulas,findbars_x)
 importFrom(reformulas,noSpecials)
 
-## skip for now until next version on CRAN
+## don't import, avoid masking warning
+## clean up once reformulas 0.4.5 is on CRAN
 ## importFrom(reformulas,reOnly)
+export(reOnly)
 importFrom(reformulas,sub_specials)
-##
 importFrom(reformulas,subbars)
 export(subbars)
 importFrom(reformulas,nobars)
