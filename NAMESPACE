@@ -161,6 +161,19 @@ exportClasses(Covariance, Covariance.us, Covariance.diag, Covariance.cs,
 ##------ Our S4 Generics / Methods --------------
 exportMethods(getL)
 exportMethods(show)
+exportMethods(getPar)
+exportMethods(getParLength)
+exportMethods(getParNames)
+exportMethods(setPar)
+exportMethods(getTheta)
+exportMethods(getThetaLength)
+exportMethods(getThetaNames)
+exportMethods(getThetaIndex)
+exportMethods(getThetaIndexLength)
+exportMethods(setTheta)
+exportMethods(getLower)
+exportMethods(getUpper)
+exportMethods(getLambda)
 
 ##------ Our S3 Methods -------------------------
 S3method(anova,merMod)
